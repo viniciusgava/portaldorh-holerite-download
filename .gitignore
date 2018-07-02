@@ -149,8 +149,6 @@ venv.bak/
 
 # End of https://www.gitignore.io/api/python,pycharm
 
+.DS_Store
 
-
-# IGNORE sensitive information files
-credentials.py
-input.py
+downloads/
