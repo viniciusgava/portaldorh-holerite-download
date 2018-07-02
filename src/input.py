@@ -2,7 +2,7 @@ import os
 import sys
 
 if os.environ.get('RH_SEARCHDATE') is None:
-    sys.exit("Missing ENV VARIABLE RH_USERNAME")
+    sys.exit("Missing ENV VARIABLE RH_SEARCHDATE")
 
 searchDate = os.environ.get('RH_SEARCHDATE')
 

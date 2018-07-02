@@ -6,6 +6,7 @@ import input
 import credentials
 import logging
 import sys
+import re
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
@@ -26,12 +27,14 @@ def wait_file_exists(file_path):
         rootLogger.info("Waiting download...")
         time.sleep(3)
 
+
 def enable_download_in_headless_chrome(browser, download_dir):
-    #add missing support for chrome "send_command"  to selenium webdriver
+    # add missing support for chrome "send_command"  to selenium webdriver
     browser.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
 
     params = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': download_dir}}
     browser.execute("send_command", params)
+
 
 defaultDownloadPath = tempfile.mkdtemp()
 
@@ -58,9 +61,9 @@ profile = {
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option("prefs", profile)
-options.add_argument('--no-sandbox')
-options.add_argument('--headless')
-options.add_argument('--disable-gpu')
+# options.add_argument('--no-sandbox')
+# options.add_argument('--headless')
+# options.add_argument('--disable-gpu')
 
 driver = webdriver.Chrome(chrome_options=options)
 driver.implicitly_wait(10)
@@ -104,26 +107,31 @@ dateElement = driver.find_element_by_id("controlsAscx111_txtDataRef")
 dateElement.clear()
 dateElement.send_keys(input.searchDate)
 
-rootLogger.info("Inputing search date: "+ input.searchDate)
+rootLogger.info("Inputing search date: " + input.searchDate)
 
 rootLogger.info("Waiting pdf download")
 
 # search
 driver.find_element_by_id("controlsAscx111_btnDemoConsultar").click()
 
-download_file_path = os.path.join(defaultDownloadPath, 'Auto_PrincipalConteudo.aspx')
-pdf_file_path = os.path.abspath(input.defaultDownloadPath)
-
-driver.save_screenshot("bla.png")
-
-wait_file_exists(download_file_path)
-
-rootLogger.info("Download finished. Renaming file...")
-
-# Rename
-shutil.move(
-    os.path.join(download_file_path),
-    os.path.join(pdf_file_path, (input.searchDate.replace("/", "-") + ".pdf")),
+invalidDatePattern = re.compile(
+    "Demonstrativo de Pagamento (.+) não liberado para emissão!. Será liberado a partir do dia ([0-9]{2}\/[0-9]{2}\/[0-9]{4})\."
 )
+if invalidDatePattern.search(driver.page_source) != None:
+    rootLogger.warning("Invalid search date: " + input.searchDate)
+else:
+    download_file_path = os.path.join(defaultDownloadPath, 'Auto_PrincipalConteudo.aspx')
+    pdf_file_path = os.path.abspath(input.defaultDownloadPath)
 
-rootLogger.info("Rename has been finished. Path: " + os.path.join(pdf_file_path, (input.searchDate.replace("/", "-") + ".pdf")))
+    wait_file_exists(download_file_path)
+
+    rootLogger.info("Download finished. Renaming file...")
+
+    # Rename
+    shutil.move(
+        os.path.join(download_file_path),
+        os.path.join(pdf_file_path, (input.searchDate.replace("/", "-") + ".pdf")),
+    )
+
+    rootLogger.info(
+        "Rename has been finished. Path: " + os.path.join(pdf_file_path, (input.searchDate.replace("/", "-") + ".pdf")))
