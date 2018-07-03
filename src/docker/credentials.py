@@ -7,7 +7,7 @@ if os.environ.get('RH_USERNAME') is None:
 if os.environ.get('RH_PASSWORD') is None:
     sys.exit("Missing ENV VARIABLE RH_PASSWORD")
 
-# customer username
+# Customer username
 username = os.environ.get('RH_USERNAME')
 
 # Customer Password

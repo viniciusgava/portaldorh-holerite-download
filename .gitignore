@@ -151,4 +151,9 @@ venv.bak/
 
 .DS_Store
 
+# Download folder
 downloads/
+
+# Sensitive information
+src/local/credentials.py
+src/local/settings.py

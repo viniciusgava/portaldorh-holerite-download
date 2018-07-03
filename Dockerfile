@@ -7,12 +7,7 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
 RUN pip3 install selenium
 
 COPY src/ /usr/workspace
-COPY holerite-entry-point.sh /opt/bin
-
-USER root
-RUN chmod +x /opt/bin/holerite-entry-point.sh
-USER seluser
 
 WORKDIR /usr/workspace
 
-CMD ["/opt/bin/holerite-entry-point.sh"]
+CMD ["python3", "/usr/workspace/app-docker.py"]
