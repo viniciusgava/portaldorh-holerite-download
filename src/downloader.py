@@ -111,14 +111,15 @@ class Downloader:
         self.logger.info("Inputing search date: " + self.settings.search_date)
         date_element = self.driver.find_element_by_id("controlsAscx111_txtDataRef")
         date_element.clear()
-        date_element.send_keys(self.settings.search_date)
+        date_element.send_keys(self.prepare_date_to_search(self.settings.search_date))
 
         # Perform search
         self.driver.find_element_by_id("controlsAscx111_btnDemoConsultar").click()
 
     def check_result(self):
         # Regex to check if given date is invalid
-        invalid_date_pattern = re.compile("Demonstrativo de Pagamento (.+) não liberado para emissão!. Será liberado a partir do dia ([0-9]{2}\/[0-9]{2}\/[0-9]{4})\.")
+        invalid_date_pattern = re.compile(
+            "Demonstrativo de Pagamento (.+) não liberado para emissão!. Será liberado a partir do dia ([0-9]{2}\/[0-9]{2}\/[0-9]{4})\.")
 
         # is a invalid date?
         if invalid_date_pattern.search(self.driver.page_source) is not None:
@@ -126,11 +127,9 @@ class Downloader:
             return
 
         # It is a valid date
-        download_file_path = os.path.join(self.tmp_download_path, 'Auto_PrincipalConteudo.aspx')
-        pdf_file_path = os.path.abspath(self.settings.default_download_path)
 
-        print(download_file_path)
-        print(pdf_file_path )
+        # Download file path
+        download_file_path = os.path.join(self.tmp_download_path, 'Auto_PrincipalConteudo.aspx')
 
         # Wait file download
         self.logger.info("Waiting pdf download")
@@ -140,15 +139,20 @@ class Downloader:
         # Success - File downloaded
         self.logger.info("Download finished. Moving file to final path...")
 
+        # Final file path
+        pdf_file_path = os.path.abspath(self.settings.default_download_path)
+        pdf_file_path = os.path.join(pdf_file_path, (self.settings.search_date + ".pdf"))
+
         # Move
-        shutil.move(
-            os.path.join(download_file_path),
-            os.path.join(pdf_file_path, (self.settings.search_date.replace("/", "-") + ".pdf")),
-        )
-        self.logger.info(
-            "File has been moved to: " +
-            os.path.join(pdf_file_path, (self.settings.search_date.replace("/", "-") + ".pdf"))
-        )
+        shutil.move(download_file_path, pdf_file_path)
+        self.logger.info("File has been moved to: " + pdf_file_path)
+
+    def prepare_date_to_search(self, search_date):
+        date = search_date.split('-')
+        date = list(reversed(date))
+        date = '/'.join(date)
+
+        return date
 
     def wait_file_exists(self, file_path):
         timeout = 0

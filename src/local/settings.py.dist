@@ -1,7 +1,7 @@
 import os
 
 # Search date
-search_date = '03/2018'
+search_date = '2018-03'
 
 # Default portal do RH URL
 portal_rh = 'https://www.portaldorh.com.br/portal_rckt/Auto_Principal.aspx'

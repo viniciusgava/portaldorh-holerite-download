@@ -4,17 +4,17 @@ Download holerite PDF using selenium, chrome and python at Portal do RH
 
 ```
 docker run -v $(pwd):/usr/workspace/downloads \
-    -e RH_USERNAME='YOUR USER NAME HERE' \
-    -e RH_PASSWORD='YOUR PASSWORD' \
-    -e RH_SEARCHDATE='03/2018' \
+    -e RH_USERNAME='YOUR USERNAME HERE' \
+    -e RH_PASSWORD='YOUR PASSWORD HERE' \
+    -e RH_SEARCHDATE='2018-03' \
     viniciusgava/portaldorh-holerite-download:latest
 ```
 The above command will save pdf in ``$(pwd)``, it means the directory where you run it.
-File name is the search date, ``MM-YYYY.pdf``.
+File name is the search date, ``YYYY-MM.pdf``.
 
 **eg:**
 
-``03-2018.pdf``
+``2018-03.pdf``
  
 ### Container ENV variables
 
