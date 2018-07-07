@@ -14,9 +14,8 @@ from selenium.webdriver.support.ui import Select
 class Downloader:
     tmp_download_path = tempfile.mkdtemp()
 
-    def __init__(self, credentials, settings):
+    def __init__(self, settings):
         self.settings = settings
-        self.credentials = credentials
 
         # Configure logger
         self.logger = logging.getLogger()
@@ -63,9 +62,10 @@ class Downloader:
         self.logger.info("Initializing Holerite download")
         self.logger.info("Download path: " + self.settings.default_download_path)
         self.logger.info("Temporary download path: " + self.tmp_download_path)
-        self.logger.info("Portal do RH URL: " + self.settings.portal_rh)
-        self.logger.info("Portal do RH username: " + self.credentials.username)
-        self.logger.info("Holerite date: " + self.settings.search_date)
+        self.logger.info("Portal do RH URL: " + self.settings.portal_rh.url)
+        self.logger.info("Portal do RH username: " + self.settings.portal_rh.username)
+        self.logger.info("Holerite year: " + self.settings.search_year)
+        self.logger.info("Holerite month: " + self.settings.search_month)
 
         # Login
         self.login()
@@ -74,24 +74,26 @@ class Downloader:
         self.search_document()
 
         # Check result
-        self.check_result()
+        result = self.check_result()
 
         self.driver.close()
         self.logger.info("Script finished")
 
+        return True
+
     def login(self):
         # Open login page
-        self.driver.get(self.settings.portal_rh)
+        self.driver.get(self.settings.portal_rh.url)
 
         # Input username
         username_element = self.driver.find_element_by_id("CtrlLogin1_txtIDNumerico")
         username_element.clear()
-        username_element.send_keys(self.credentials.username)
+        username_element.send_keys(self.settings.portal_rh.username)
 
         # Input password
         password_element = self.driver.find_element_by_id("CtrlLogin1_txtSenhaAlfanumerico")
         password_element.clear()
-        password_element.send_keys(self.credentials.password)
+        password_element.send_keys(self.settings.portal_rh.password)
 
         self.logger.info("Username and password has been filled. Logging..")
 
@@ -108,10 +110,10 @@ class Downloader:
         type_select.select_by_visible_text("MENSAL")
 
         # Given search date
-        self.logger.info("Inputing search date: " + self.settings.search_date)
+        self.logger.info("Inputing search date: " + self.get_search_date())
         date_element = self.driver.find_element_by_id("controlsAscx111_txtDataRef")
         date_element.clear()
-        date_element.send_keys(self.prepare_date_to_search(self.settings.search_date))
+        date_element.send_keys(self.get_search_date())
 
         # Perform search
         self.driver.find_element_by_id("controlsAscx111_btnDemoConsultar").click()
@@ -123,8 +125,8 @@ class Downloader:
 
         # is a invalid date?
         if invalid_date_pattern.search(self.driver.page_source) is not None:
-            self.logger.warning("Invalid search date: " + self.settings.search_date)
-            return
+            self.logger.warning("Invalid search date: " + self.get_search_date())
+            return False
 
         # It is a valid date
 
@@ -134,25 +136,26 @@ class Downloader:
         # Wait file download
         self.logger.info("Waiting pdf download")
         if self.wait_file_exists(download_file_path) is False:
-            return
+            return False
 
         # Success - File downloaded
         self.logger.info("Download finished. Moving file to final path...")
 
+        # Pdf file name
+        pdf_file_name = "%s-%s.pdf" % (self.settings.search_year, self.settings.search_month)
+
         # Final file path
         pdf_file_path = os.path.abspath(self.settings.default_download_path)
-        pdf_file_path = os.path.join(pdf_file_path, (self.settings.search_date + ".pdf"))
+        pdf_file_path = os.path.join(pdf_file_path, pdf_file_name)
 
         # Move
         shutil.move(download_file_path, pdf_file_path)
         self.logger.info("File has been moved to: " + pdf_file_path)
 
-    def prepare_date_to_search(self, search_date):
-        date = search_date.split('-')
-        date = list(reversed(date))
-        date = '/'.join(date)
+        return True
 
-        return date
+    def get_search_date(self):
+        return "%s/%s" % (self.settings.search_month, self.settings.search_year)
 
     def wait_file_exists(self, file_path):
         timeout = 0
