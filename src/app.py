@@ -1,6 +1,7 @@
 import argparse
 import logging
 import sys
+import time
 
 from automate.downloader import Downloader
 from integration.mailgun import Mailgun
@@ -25,6 +26,9 @@ ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+
+# Sleep
+time.sleep(1)
 
 downloader = Downloader(settings, logger)
 result = downloader.run()

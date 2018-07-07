@@ -50,7 +50,7 @@ headless = True
 mailgun = ObjectDic({
     'enable': os.environ.get("MAIL_GUN_ENABLE", 'false')
 })
-mailgun.enable = mailgun.enable != 'false'
+mailgun.enable = mailgun.enable == 'true'
 
 # Mail Gun
 if mailgun.enable:
@@ -100,7 +100,7 @@ if mailgun.enable:
 pushbullet = ObjectDic({
     'enable': os.environ.get("PUSH_BULLET_ENABLE", 'false')
 })
-pushbullet.enable = mailgun.enable != 'false'
+pushbullet.enable = mailgun.enable == 'true'
 
 # Push Bullet Notification
 if pushbullet.enable:
