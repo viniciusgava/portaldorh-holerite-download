@@ -8,6 +8,8 @@ RUN pip3 install selenium requests
 
 COPY src/ /usr/workspace
 
+RUN sudo chown -R seluser:seluser /usr/workspace
+
 WORKDIR /usr/workspace
 
 CMD ["python3", "/usr/workspace/app.py", "docker"]
