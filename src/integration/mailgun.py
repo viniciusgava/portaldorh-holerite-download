@@ -4,15 +4,20 @@ from requests.auth import HTTPBasicAuth
 
 class Mailgun:
 
-    def __init__(self, settings):
+    def __init__(self, settings, logger):
         self.settings = settings.mailgun
         self.search_year = settings.search_year
         self.search_month = settings.search_month
         self.default_download_path = settings.default_download_path
 
+        self.logger = logger
+
     def send(self):
         if self.settings.enable is False:
+            self.logger.info('Mail Gun Integration is disabled')
             return False
+
+        self.logger.info('Starting Mail Gun Integration...')
 
         response = requests.post(
             self.get_url(),
@@ -21,9 +26,15 @@ class Mailgun:
             auth=HTTPBasicAuth('api', self.settings.api_key)
         )
 
+        self.logger.info('Response status: %d' % response.status_code)
+        self.logger.info('Response text:')
+        self.logger.info(response.text)
+
         if response.status_code == 200:
+            self.logger.info('Email has been sent')
             return True
 
+        self.logger.info('Fail to send email')
         return False
 
     def get_url(self):

@@ -3,8 +3,6 @@ import os
 import shutil
 import time
 import tempfile
-import logging
-import sys
 import re
 
 import selenium
@@ -14,17 +12,9 @@ from selenium.webdriver.support.ui import Select
 class Downloader:
     tmp_download_path = tempfile.mkdtemp()
 
-    def __init__(self, settings):
+    def __init__(self, settings, logger):
         self.settings = settings
-
-        # Configure logger
-        self.logger = logging.getLogger()
-        self.logger.setLevel(logging.DEBUG)
-        ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        ch.setFormatter(formatter)
-        self.logger.addHandler(ch)
+        self.logger = logger
 
         # Define driver options
         driver_profile = {
@@ -45,7 +35,7 @@ class Downloader:
         driver_options.add_experimental_option("prefs", driver_profile)
 
         # Should use headless?
-        if hasattr(settings, 'headless') and settings.headless is True:
+        if settings.headless is True:
             driver_options.add_argument('--no-sandbox')
             driver_options.add_argument('--headless')
             driver_options.add_argument('--disable-gpu')
@@ -55,7 +45,7 @@ class Downloader:
         self.driver.implicitly_wait(10)
 
         # Workaround to fix headless problem to set default download path
-        if hasattr(settings, 'headless') and settings.headless is True:
+        if settings.headless is True:
             self.enable_download_in_headless_chrome()
 
     def run(self):
@@ -66,6 +56,7 @@ class Downloader:
         self.logger.info("Portal do RH username: " + self.settings.portal_rh.username)
         self.logger.info("Holerite year: " + self.settings.search_year)
         self.logger.info("Holerite month: " + self.settings.search_month)
+        self.logger.info("Headless: %r" % self.settings.headless)
 
         # Login
         self.login()
@@ -77,7 +68,7 @@ class Downloader:
         result = self.check_result()
 
         self.driver.close()
-        self.logger.info("Script finished")
+        self.logger.info("download finished")
 
         return True
 

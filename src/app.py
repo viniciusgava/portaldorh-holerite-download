@@ -1,4 +1,6 @@
 import argparse
+import logging
+import sys
 
 from automate.downloader import Downloader
 from integration.mailgun import Mailgun
@@ -14,9 +16,18 @@ if env == 'docker':
 else:
     import settings.local as settings
 
-downloader = Downloader(settings)
+# Configure logger
+logger = logging.getLogger('app')
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+downloader = Downloader(settings, logger)
 result = downloader.run()
 
-if (result):
-    mailgun = Mailgun(settings)
+if result:
+    mailgun = Mailgun(settings, logger)
     mailgun.send()
