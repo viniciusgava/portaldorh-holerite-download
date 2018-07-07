@@ -59,10 +59,12 @@ class Downloader:
         self.logger.info("Headless: %r" % self.settings.headless)
 
         # Login
-        self.login()
+        if self.login() is False:
+            return False
 
         # Search document
-        self.search_document()
+        if self.search_document() is False:
+            return False
 
         # Check result
         result = self.check_result()
@@ -70,7 +72,7 @@ class Downloader:
         self.driver.close()
         self.logger.info("download finished")
 
-        return True
+        return result
 
     def login(self):
         # Open login page
@@ -91,6 +93,15 @@ class Downloader:
         # Sign-in
         self.driver.find_element_by_id("CtrlLogin1_btnIniciar").click()
 
+        home_pattern = re.compile(".*Auto_Default\.aspx.*")
+
+        # Sign-in Fail?
+        if home_pattern.match(self.driver.current_url) is not None:
+            self.logger.warning('Username or password invalid')
+            return False
+
+        return True
+
     def search_document(self):
         # Select mainFrame, where is the search form
         self.driver.switch_to.frame("mainFrame")
@@ -108,6 +119,8 @@ class Downloader:
 
         # Perform search
         self.driver.find_element_by_id("controlsAscx111_btnDemoConsultar").click()
+
+        return True
 
     def check_result(self):
         # Regex to check if given date is invalid
