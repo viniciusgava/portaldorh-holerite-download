@@ -46,10 +46,24 @@ if mailgun.enable:
     mailgun['to'] = 'MAIL TO'
 
     # Mail Gun - Subject
-    mailgun['subject'] = 'Mail Subject'
+    mailgun['subject'] = 'MAIL SUBJECT'
 
     # Mail Gun - Text
-    mailgun['text'] = 'Mail text body'
+    mailgun['text'] = 'MAIL TEXT BODY'
 
     # Mail Gun - Html
-    #mailgun['html'] = 'Mail html body'
+    #mailgun['html'] = 'MAIL HTML BODY'
+
+# Push Bullet Notification - Enable?
+pushbullet = ObjectDic({'enable': True})
+
+# Push Bullet Notification
+if pushbullet.enable:
+    # Push Bullet - Api Token
+    pushbullet['token'] = 'PUSH BULLET TOKEN'
+
+    # Push Bullet - Notification title
+    pushbullet['title'] = 'NOTIFICATION TITLE'
+
+    # Push Bullet - Notification body
+    pushbullet['body'] = 'NOTIFICATION BODY'

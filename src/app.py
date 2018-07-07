@@ -4,6 +4,7 @@ import sys
 
 from automate.downloader import Downloader
 from integration.mailgun import Mailgun
+from integration.pushBulletNotification import PushBulletNotification
 
 parser = argparse.ArgumentParser("app")
 parser.add_argument('env', help='local or docker env', default='local')
@@ -31,3 +32,6 @@ result = downloader.run()
 if result:
     mailgun = Mailgun(settings, logger)
     mailgun.send()
+
+    push_bullet = PushBulletNotification(settings, logger)
+    push_bullet.push()

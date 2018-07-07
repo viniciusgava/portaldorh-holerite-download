@@ -94,5 +94,30 @@ if mailgun.enable:
         mailgun['text'] = os.environ.get('MAIL_GUN_TEXT')
 
     # Mail Gun - Html
-    if os.environ.get('MAIL_GUN_HTML') is not None:
-        mailgun['html'] = os.environ.get('MAIL_GUN_HTML')
+    #mailgun['html'] = 'MAIL HTML BODY'
+
+# Push Bullet Notification - Enable?
+pushbullet = ObjectDic({
+    'enable': os.environ.get("PUSH_BULLET_ENABLE", 'false')
+})
+pushbullet.enable = mailgun.enable != 'false'
+
+# Push Bullet Notification
+if pushbullet.enable:
+    # Push Bullet - Api Token
+    if os.environ.get('PUSH_BULLET_TOKEN') is None:
+        sys.exit("Missing ENV VARIABLE PUSH_BULLET_TOKEN")
+
+    pushbullet['token'] = os.environ.get('PUSH_BULLET_TOKEN')
+
+    # Push Bullet - Notification title
+    if os.environ.get('PUSH_BULLET_TITLE') is None:
+        sys.exit("Missing ENV VARIABLE PUSH_BULLET_TITLE")
+
+    pushbullet['title'] = os.environ.get('PUSH_BULLET_TITLE')
+
+    # Push Bullet - Notification body
+    if os.environ.get('PUSH_BULLET_BODY') is None:
+        sys.exit("Missing ENV VARIABLE PUSH_BULLET_BODY")
+
+    pushbullet['body'] = os.environ.get('PUSH_BULLET_BODY')

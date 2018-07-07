@@ -1,5 +1,10 @@
 # Portal do RH Download
-Download holerite PDF using selenium, chrome and python at Portal do RH
+Download holerite PDF using selenium, chrome and python at Portal do RH.
+
+## Additional Integrations
+- E-mail with downloaded PDF attachment by Mail Gun
+- Execution notification by Push Bullet
+
 ## Usage - Docker
 
 ```
@@ -54,7 +59,7 @@ Integrate with mail gun? true or false
 **Default:** false
 
 #### MAIL_GUN_KEY
-Mail Gun Api Key
+Mail Gun API Key
 **Required:** Yes
 
 #### MAIL_GUN_DOMAIN
@@ -74,14 +79,39 @@ Mail destination
 #### MAIL_GUN_SUBJECT
 Mail subject
 **Required:** Yes
+**Placeholder Available:** Yes
 
 #### MAIL_GUN_TEXT
 Mail content as text
 **Required:** Yes if ``MAIL_GUN_HTML`` is not setted
+**Placeholder Available:** Yes
 
 #### MAIL_GUN_HTML
 Mail content as text
 **Required:** Yes if ``MAIL_GUN_TEXT`` is not setted
+**Placeholder Available:** Yes
+
+### Push Bullet feature - ENV variables
+All Required fields bellow are required **only** if ``PUSH_BULLET_ENABLE`` env setted as ``true``
+
+#### PUSH_BULLET_ENABLE
+Integrate with push bullet? true or false
+**Required:** No
+**Default:** false
+
+#### PUSH_BULLET_TOKEN
+Push Bullet API Token
+**Required:** Yes
+
+#### PUSH_BULLET_TITLE
+Notification Title
+**Required:** Yes
+**Placeholder Available:** Yes
+
+#### PUSH_BULLET_BODY
+Notification Body
+**Required:** Yes
+**Placeholder Available:** Yes
 
 # Usage - Local
 Makefile and instruction bellow expected you uses python3. 
@@ -90,7 +120,20 @@ It also expected you already have a chrome webdrive installed.
 1. Clone repository
 2. Run ``make prepare-local``
 3. Edit ``src/settings/local.py`` file with your information.
-4. Run ``python3 src/app-local.py local``
+4. Run ``python3 src/app.py local`
+
+# Integrations Placeholder
+Some integration fields accept placeholder, that means you can use internal fields used on integration on your texts.
+Fields that accept placeholders are marked on **Env Variables** of each integration.
+
+## Placeholder syntax
+``%(placeholderName)s``
+Example:
+``This is my holerite at %(search_year)s/%(search_month)s``
+
+## Available placeholders
+- search_year
+- search_month
 
 ## Links
 - [GitHub](https://github.com/viniciusgava/portaldorh-holerite-download)
