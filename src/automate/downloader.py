@@ -3,8 +3,6 @@ import os
 import shutil
 import time
 import tempfile
-import logging
-import sys
 import re
 
 import selenium
@@ -14,18 +12,9 @@ from selenium.webdriver.support.ui import Select
 class Downloader:
     tmp_download_path = tempfile.mkdtemp()
 
-    def __init__(self, credentials, settings):
+    def __init__(self, settings, logger):
         self.settings = settings
-        self.credentials = credentials
-
-        # Configure logger
-        self.logger = logging.getLogger()
-        self.logger.setLevel(logging.DEBUG)
-        ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        ch.setFormatter(formatter)
-        self.logger.addHandler(ch)
+        self.logger = logger
 
         # Define driver options
         driver_profile = {
@@ -46,7 +35,7 @@ class Downloader:
         driver_options.add_experimental_option("prefs", driver_profile)
 
         # Should use headless?
-        if hasattr(settings, 'headless') and settings.headless is True:
+        if settings.headless is True:
             driver_options.add_argument('--no-sandbox')
             driver_options.add_argument('--headless')
             driver_options.add_argument('--disable-gpu')
@@ -56,47 +45,62 @@ class Downloader:
         self.driver.implicitly_wait(10)
 
         # Workaround to fix headless problem to set default download path
-        if hasattr(settings, 'headless') and settings.headless is True:
+        if settings.headless is True:
             self.enable_download_in_headless_chrome()
 
     def run(self):
         self.logger.info("Initializing Holerite download")
         self.logger.info("Download path: " + self.settings.default_download_path)
         self.logger.info("Temporary download path: " + self.tmp_download_path)
-        self.logger.info("Portal do RH URL: " + self.settings.portal_rh)
-        self.logger.info("Portal do RH username: " + self.credentials.username)
-        self.logger.info("Holerite date: " + self.settings.search_date)
+        self.logger.info("Portal do RH URL: " + self.settings.portal_rh.url)
+        self.logger.info("Portal do RH username: " + self.settings.portal_rh.username)
+        self.logger.info("Holerite year: " + self.settings.search_year)
+        self.logger.info("Holerite month: " + self.settings.search_month)
+        self.logger.info("Headless: %r" % self.settings.headless)
 
         # Login
-        self.login()
+        if self.login() is False:
+            return False
 
         # Search document
-        self.search_document()
+        if self.search_document() is False:
+            return False
 
         # Check result
-        self.check_result()
+        result = self.check_result()
 
         self.driver.close()
-        self.logger.info("Script finished")
+        self.logger.info("download finished")
+
+        return result
 
     def login(self):
         # Open login page
-        self.driver.get(self.settings.portal_rh)
+        self.driver.get(self.settings.portal_rh.url)
 
         # Input username
         username_element = self.driver.find_element_by_id("CtrlLogin1_txtIDNumerico")
         username_element.clear()
-        username_element.send_keys(self.credentials.username)
+        username_element.send_keys(self.settings.portal_rh.username)
 
         # Input password
         password_element = self.driver.find_element_by_id("CtrlLogin1_txtSenhaAlfanumerico")
         password_element.clear()
-        password_element.send_keys(self.credentials.password)
+        password_element.send_keys(self.settings.portal_rh.password)
 
         self.logger.info("Username and password has been filled. Logging..")
 
         # Sign-in
         self.driver.find_element_by_id("CtrlLogin1_btnIniciar").click()
+
+        home_pattern = re.compile(".*Auto_Default\.aspx.*")
+
+        # Sign-in Fail?
+        if home_pattern.match(self.driver.current_url) is not None:
+            self.logger.warning('Username or password invalid')
+            return False
+
+        return True
 
     def search_document(self):
         # Select mainFrame, where is the search form
@@ -108,47 +112,54 @@ class Downloader:
         type_select.select_by_visible_text("MENSAL")
 
         # Given search date
-        self.logger.info("Inputing search date: " + self.settings.search_date)
+        self.logger.info("Inputing search date: " + self.get_search_date())
         date_element = self.driver.find_element_by_id("controlsAscx111_txtDataRef")
         date_element.clear()
-        date_element.send_keys(self.settings.search_date)
+        date_element.send_keys(self.get_search_date())
 
         # Perform search
         self.driver.find_element_by_id("controlsAscx111_btnDemoConsultar").click()
 
+        return True
+
     def check_result(self):
         # Regex to check if given date is invalid
-        invalid_date_pattern = re.compile("Demonstrativo de Pagamento (.+) não liberado para emissão!. Será liberado a partir do dia ([0-9]{2}\/[0-9]{2}\/[0-9]{4})\.")
+        invalid_date_pattern = re.compile(
+            "Demonstrativo de Pagamento (.+) não liberado para emissão!. Será liberado a partir do dia ([0-9]{2}\/[0-9]{2}\/[0-9]{4})\.")
 
         # is a invalid date?
         if invalid_date_pattern.search(self.driver.page_source) is not None:
-            self.logger.warning("Invalid search date: " + self.settings.search_date)
-            return
+            self.logger.warning("Invalid search date: " + self.get_search_date())
+            return False
 
         # It is a valid date
-        download_file_path = os.path.join(self.tmp_download_path, 'Auto_PrincipalConteudo.aspx')
-        pdf_file_path = os.path.abspath(self.settings.default_download_path)
 
-        print(download_file_path)
-        print(pdf_file_path )
+        # Download file path
+        download_file_path = os.path.join(self.tmp_download_path, 'Auto_PrincipalConteudo.aspx')
 
         # Wait file download
         self.logger.info("Waiting pdf download")
         if self.wait_file_exists(download_file_path) is False:
-            return
+            return False
 
         # Success - File downloaded
         self.logger.info("Download finished. Moving file to final path...")
 
+        # Pdf file name
+        pdf_file_name = "%s-%s.pdf" % (self.settings.search_year, self.settings.search_month)
+
+        # Final file path
+        pdf_file_path = os.path.abspath(self.settings.default_download_path)
+        pdf_file_path = os.path.join(pdf_file_path, pdf_file_name)
+
         # Move
-        shutil.move(
-            os.path.join(download_file_path),
-            os.path.join(pdf_file_path, (self.settings.search_date.replace("/", "-") + ".pdf")),
-        )
-        self.logger.info(
-            "File has been moved to: " +
-            os.path.join(pdf_file_path, (self.settings.search_date.replace("/", "-") + ".pdf"))
-        )
+        shutil.move(download_file_path, pdf_file_path)
+        self.logger.info("File has been moved to: " + pdf_file_path)
+
+        return True
+
+    def get_search_date(self):
+        return "%s/%s" % (self.settings.search_month, self.settings.search_year)
 
     def wait_file_exists(self, file_path):
         timeout = 0

@@ -1,0 +1,69 @@
+import os
+
+from util.ObjectDic import ObjectDic
+
+portal_rh = ObjectDic({})
+
+# Portal do RH username
+portal_rh['username'] = 'YOUR USERNAME HERE'
+
+# Portal do RH password
+portal_rh['password'] = 'YOUR PASSWORD HERE'
+
+# Portal do RH Search Month
+search_year = '2018'
+
+# Portal do RH Search Month
+search_month = '03'
+
+# Portal do RH URL
+portal_rh['url'] = 'https://www.portaldorh.com.br/portal_rckt/Auto_Principal.aspx'
+
+# Download Path
+default_download_path = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + '/../../downloads')
+# Ensure downloads path exists
+if os.path.exists(default_download_path) is False:
+    os.makedirs(default_download_path)
+
+# Use Headless?
+headless = False
+
+# Mail Gun - Enable?
+mailgun = ObjectDic({'enable': False})
+
+# Mail Gun
+if mailgun.enable:
+    # Mail Gun - Api Key
+    mailgun['api_key'] = 'MAIL GUN API KEY'
+
+    # Mail Gun - Domain
+    mailgun['domain'] = 'MAIL GUN DOMAIN'
+
+    # Mail Gun - From
+    mailgun['from'] = 'MAIL FROM - Name <name@mail.com>'
+
+    # Mail Gun - To
+    mailgun['to'] = 'MAIL TO'
+
+    # Mail Gun - Subject
+    mailgun['subject'] = 'MAIL SUBJECT'
+
+    # Mail Gun - Text
+    mailgun['text'] = 'MAIL TEXT BODY'
+
+    # Mail Gun - Html
+    #mailgun['html'] = 'MAIL HTML BODY'
+
+# Push Bullet Notification - Enable?
+pushbullet = ObjectDic({'enable': True})
+
+# Push Bullet Notification
+if pushbullet.enable:
+    # Push Bullet - Api Token
+    pushbullet['token'] = 'PUSH BULLET TOKEN'
+
+    # Push Bullet - Notification title
+    pushbullet['title'] = 'NOTIFICATION TITLE'
+
+    # Push Bullet - Notification body
+    pushbullet['body'] = 'NOTIFICATION BODY'

@@ -155,5 +155,4 @@ venv.bak/
 downloads/
 
 # Sensitive information
-src/local/credentials.py
-src/local/settings.py
+src/settings/local.py
