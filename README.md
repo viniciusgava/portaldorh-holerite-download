@@ -50,7 +50,7 @@ Portal do RH URL
 
 **Required:** No
 
-**Default:** https://www.portaldorh.com.br/portal_rckt/Auto_Principal.aspx
+**Default:** https://www.portaldorh.com.br/portal_rckt/auto_default.aspx
 
 ### DOWNLOAD_PATH
 Where files will be saved.
@@ -178,8 +178,11 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 date
 
 # GET LAST MONTH YEAR AND MONTH
-LAST_MONTH_YEAR=$(perl -MPOSIX=strftime -le '@t = localtime; $t[3] = 1; $t[5]--; print strftime("%Y", @t)')
-LAST_MONTH_MONTH=$(perl -MPOSIX=strftime -le '@t = localtime; $t[3] = 1; $t[4]--; print strftime("%m", @t)')
+LAST_MONTH_YEAR=$(php -r 'print date("Y", strtotime("previous month"));')
+LAST_MONTH_MONTH=$(php -r 'print date("m", strtotime("previous month"));')
+
+echo "search year: $LAST_MONTH_YEAR"
+echo "search month: $LAST_MONTH_MONTH"
 
 # try 5 times
 n=0
@@ -197,6 +200,8 @@ done
 ````
 **Mac tip:** You must to pass docker full path to works at crontab
 ``/usr/local/bin/docker``
+
+**We are using PHP to get last month month and year, make sure you have it installed.**
 
 Second add all env variables at ``env-configs``.
 Example:

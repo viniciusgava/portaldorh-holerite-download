@@ -32,7 +32,7 @@ search_month = os.environ.get('RH_SEARCH_MONTH')
 # Portal do RH URL
 portal_rh['url'] = os.environ.get(
     "RH_URL",
-    "https://www.portaldorh.com.br/portal_rckt/Auto_Principal.aspx"
+    "https://www.portaldorh.com.br/portal_rckt/auto_default.aspx"
 )
 
 # Download Path
