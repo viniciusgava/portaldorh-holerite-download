@@ -4,7 +4,7 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     python3-pip \
     && sudo rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install selenium requests
+RUN pip3 install selenium==3.8.0 requests
 
 COPY src/ /usr/workspace
 
