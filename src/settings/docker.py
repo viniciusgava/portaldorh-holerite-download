@@ -93,14 +93,14 @@ if mailgun.enable:
     if os.environ.get('MAIL_GUN_TEXT') is not None:
         mailgun['text'] = os.environ.get('MAIL_GUN_TEXT')
 
-    # Mail Gun - Html
-    #mailgun['html'] = 'MAIL HTML BODY'
+    if os.environ.get('MAIL_GUN_HTML') is not None:
+        mailgun['html'] = os.environ.get('MAIL_GUN_HTML')
 
 # Push Bullet Notification - Enable?
 pushbullet = ObjectDic({
     'enable': os.environ.get("PUSH_BULLET_ENABLE", 'false')
 })
-pushbullet.enable = mailgun.enable == 'true'
+pushbullet.enable = pushbullet.enable == 'true'
 
 # Push Bullet Notification
 if pushbullet.enable:

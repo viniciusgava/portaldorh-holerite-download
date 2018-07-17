@@ -186,7 +186,7 @@ echo "search month: $LAST_MONTH_MONTH"
 
 # try 5 times
 n=0
-until [ $n -ge 5 ]
+until [ $n -ge 2 ]
 do
     echo "trying $n"
     /usr/local/bin/docker run --env-file "$SCRIPTPATH/env-configs" \
@@ -206,9 +206,10 @@ done
 Second add all env variables at ``env-configs``.
 Example:
  ````bash
-RH_USERNAME='YOUR USERNAME HERE'
-RH_PASSWORD='YOUR PASSWORD HERE'
+RH_USERNAME=YOUR USERNAME HERE
+RH_PASSWORD=YOUR PASSWORD HERE
 ````
+DO NOT use quotation to define values on env files.
 
 Then run ``crontab -e`` and add the follow cron.
 Example:
