@@ -1,5 +1,5 @@
 build-docker:cleanup
-	docker build -t viniciusgava/portaldorh-holerite-download:latest .
+	docker build --no-cache -t viniciusgava/portaldorh-holerite-download:latest .
 
 publish-image:
 	docker push viniciusgava/portaldorh-holerite-download:latest

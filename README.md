@@ -1,5 +1,5 @@
 # Portal do RH Download
-Download holerite PDF using selenium, chrome and python at Portal do RH.
+Download holerite PDF using python at Portal do RH.
 
 ## Additional Integrations
 - E-mail with downloaded PDF attachment by Mail Gun
@@ -145,13 +145,11 @@ Notification Body
 
 ## Usage - Local
 Makefile and instruction bellow expected you uses python3. 
-
-It also expected you already have a chrome webdrive installed. 
-
+ 
 1. Clone repository
 2. Run ``make prepare-local``
 3. Edit ``src/settings/local.py`` file with your information.
-4. Run ``python3 src/app.py local`
+4. Run ``python3 src/app.py local``
 
 ## Integrations Placeholder
 Some integration fields accept placeholder, that means you can use internal fields used on integration on your texts.

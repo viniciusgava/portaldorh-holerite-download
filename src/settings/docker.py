@@ -44,8 +44,6 @@ default_download_path = os.environ.get(
 if os.path.exists(default_download_path) is False:
     os.makedirs(default_download_path)
 
-headless = True
-
 # Mail Gun - Enable?
 mailgun = ObjectDic({
     'enable': os.environ.get("MAIL_GUN_ENABLE", 'false')
