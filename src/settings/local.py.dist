@@ -25,9 +25,6 @@ default_download_path = os.path.realpath(os.path.dirname(os.path.abspath(__file_
 if os.path.exists(default_download_path) is False:
     os.makedirs(default_download_path)
 
-# Use Headless?
-headless = False
-
 # Mail Gun - Enable?
 mailgun = ObjectDic({'enable': False})
 
