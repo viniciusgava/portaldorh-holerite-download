@@ -166,7 +166,6 @@ Example:
 - search_month
 
 ## Crontab
-
 First create bash like this:
 ````bash
 #!/bin/bash
@@ -176,8 +175,8 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 date
 
 # GET LAST MONTH YEAR AND MONTH
-LAST_MONTH_YEAR=$(php -r 'print date("Y", strtotime("previous month"));')
-LAST_MONTH_MONTH=$(php -r 'print date("m", strtotime("previous month"));')
+LAST_MONTH_YEAR=$(date +'%Y' -d 'last month')
+LAST_MONTH_MONTH=$(date +'%m' -d 'last month')
 
 echo "search year: $LAST_MONTH_YEAR"
 echo "search month: $LAST_MONTH_MONTH"
@@ -187,9 +186,10 @@ n=0
 until [ $n -ge 2 ]
 do
     echo "trying $n"
-    /usr/local/bin/docker run --env-file "$SCRIPTPATH/env-configs" \
+    /usr/bin/docker run --env-file "$SCRIPTPATH/env-configs" \
     -e RH_SEARCH_YEAR="$LAST_MONTH_YEAR" \
     -e RH_SEARCH_MONTH="$LAST_MONTH_MONTH" \
+    --rm
     viniciusgava/portaldorh-holerite-download:latest 2>&1 && break
     n=$[$n+1]
     sleep 15
@@ -199,20 +199,18 @@ done
 **Mac tip:** You must to pass docker full path to works at crontab
 ``/usr/local/bin/docker``
 
-**We are using PHP to get last month month and year, make sure you have it installed.**
-
 Second add all env variables at ``env-configs``.
 Example:
  ````bash
 RH_USERNAME=YOUR USERNAME HERE
 RH_PASSWORD=YOUR PASSWORD HERE
 ````
-DO NOT use quotation to define values on env files.
+**DO NOT** use quotation to define values on env files.
 
 Then run ``crontab -e`` and add the follow cron.
 Example:
 ````bash
-0 8 7 * * sh ~/automate/holerite/run.sh  >> ~/automate/holerite/holerite.log
+0 8 7 * * sh /home/username/automate/holerite/run.sh  >> /home/username/automate/holerite/log.log
 ````
 The example bellow runs 8am of day 7 of every month. 
 
