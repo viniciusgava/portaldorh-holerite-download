@@ -6,6 +6,7 @@ publish-image:
 
 cleanup:
 	rm -rf src/settings/local.py
+	rm -rf downloads/*
 	find . -name "__pycache__" -exec rm -rf "{}" \;
 	find . -name "*.pyc" -exec rm -rf "{}" \;
 
