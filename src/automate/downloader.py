@@ -105,7 +105,6 @@ class Downloader:
         form_data['controlsAscx111$cboFolha'] = 'MENSAL	1'
         form_data['controlsAscx111$txtDataRef'] = self.get_search_date()
         form_data['controlsAscx111$btnDemoConsultar'] = 'Consultar'
-        form_data['controlsAscx113$cboAno'] = '2018'
         form_data['PG'] = ''
         form_data['scrollLeft'] = 0
         form_data['scrollTop'] = 0

@@ -52,7 +52,7 @@ if mailgun.enable:
     #mailgun['html'] = 'MAIL HTML BODY'
 
 # Push Bullet Notification - Enable?
-pushbullet = ObjectDic({'enable': True})
+pushbullet = ObjectDic({'enable': False})
 
 # Push Bullet Notification
 if pushbullet.enable:
