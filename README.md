@@ -1,6 +1,19 @@
 # Portal do RH Download
 Download holerite PDF using python at Portal do RH.
 
+
+**⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️**
+
+**⚠️⚠️⚠️⚠️⚠️⚠️ PROJECT ARCHIVE ⚠️⚠️⚠️⚠️⚠️⚠️**
+
+**⚠️⚠️⚠️⚠️⚠️ NO LONGER MAINTAINED ⚠️⚠️⚠️⚠️**
+
+
+**⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️**
+
+**I no longer have access to Portal do RH, so I cannot follow maintaining this project anymore.**
+
+
 ## Additional Integrations
 - E-mail with downloaded PDF attachment by Mail Gun
 - Execution notification by Push Bullet
